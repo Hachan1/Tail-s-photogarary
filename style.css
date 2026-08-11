@@ -60,6 +60,21 @@ a:hover{color:#4a8fa8}
 .index__list{display:grid;grid-template-columns:3rem 1fr;gap:var(--s3) var(--s2);align-items:baseline}
 
 /* --- gallery --- */
+.hero{position:relative;display:block}
+.hero .figure{width:100%;height:clamp(480px,72vw,860px);object-fit:cover}
+.hero__overlay{position:absolute;left:0;right:0;bottom:0;padding:var(--s3);
+  display:flex;flex-direction:column;gap:var(--s2);
+  background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.32) 35%,rgba(0,0,0,.62))}
+.hero__num{color:#ffffff}
+.hero__title{color:#ffffff}
+.hero__title--small{font-size:clamp(20px,2.4vw,28px)}
+.hero__label{color:#e6e6e6}
+
+.more{padding-top:var(--s5);padding-bottom:var(--s4);display:flex;flex-direction:column;gap:var(--s3)}
+.more__grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--s2)}
+.hero--small .figure{height:clamp(280px,30vw,380px)}
+.hero--small .hero__overlay{padding:var(--s2)}
+
 a.figure-link{display:block}
 a.figure-link .figure{transition:opacity .3s}
 a.figure-link:hover .figure{opacity:.82}

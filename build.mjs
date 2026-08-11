@@ -81,34 +81,49 @@ function renderTop(data) {
   });
   h += nav(site, '', 'top');
   h += '\n<main>\n';
-  if (lead) {
-    h += '  <section class="wrap lead entry">\n' +
-'    <span class="num">' + lead.no + '</span>\n' +
-'    <div class="entry__body">\n' +
-'      <h1 class="title">' + esc(lead.title) + '</h1>\n' +
-'      <p class="label">' + esc(lead.meta) + '</p>\n' +
-'      <a class="viewlink" href="works/' + lead.slug + '/">View gallery</a>\n' +
-'    </div>\n  </section>\n\n';
-    if (lead.photos[0]) h += figure(lead, lead.photos[0], 'works/' + lead.slug + '/', true);
+  if (lead && lead.photos[0]) {
+    const p = lead.photos[0];
+    const style = p.focus ? ' style="object-position:' + p.focus + '"' : '';
+    h += '  <a class="figure-link hero" href="works/' + lead.slug + '/">\n' +
+'    <img class="figure" src="images/' + p.file + '" alt="' + esc(p.alt) + '"' + dims(p) + style +
+' loading="eager" decoding="async">\n' +
+'    <div class="hero__overlay">\n' +
+'      <span class="num hero__num">' + lead.no + '</span>\n' +
+'      <h1 class="title hero__title">' + esc(lead.title) + '</h1>\n' +
+'      <p class="label hero__label">' + esc(lead.meta) + '</p>\n' +
+'    </div>\n  </a>\n\n';
     if (lead.note) {
       h += '\n  <div class="wrap caption">\n    <span class="num"></span>\n' +
 '    <p class="body">' + esc(lead.note) + '</p>\n  </div>\n\n';
     }
   }
   if (second && second.photos[0]) {
-    h += figure(second, second.photos[0], 'works/' + second.slug + '/', false);
-    h += '\n  <div class="wrap caption">\n    <span class="num">' + second.no + '</span>\n' +
-'    <div class="caption__body">\n' +
-'      <a class="h2" href="works/' + second.slug + '/">' + esc(second.title) + '</a>\n' +
-'      <p class="label">' + esc(second.meta) + '</p>\n' +
-'    </div>\n  </div>\n';
+    const p = second.photos[0];
+    const style = p.focus ? ' style="object-position:' + p.focus + '"' : '';
+    h += '  <a class="figure-link hero" href="works/' + second.slug + '/">\n' +
+'    <img class="figure" src="images/' + p.file + '" alt="' + esc(p.alt) + '"' + dims(p) + style +
+' loading="lazy" decoding="async">\n' +
+'    <div class="hero__overlay">\n' +
+'      <span class="num hero__num">' + second.no + '</span>\n' +
+'      <h2 class="title hero__title">' + esc(second.title) + '</h2>\n' +
+'      <p class="label hero__label">' + esc(second.meta) + '</p>\n' +
+'    </div>\n  </a>\n';
   }
   const rest = list.slice(second ? 2 : 1, (second ? 2 : 1) + 4);
   if (rest.length) {
-    h += '\n  <section class="wrap index">\n    <p class="label">More series</p>\n    <div class="index__list">\n';
+    h += '\n  <section class="wrap more">\n    <p class="label">More series</p>\n    <div class="more__grid">\n';
     for (const s of rest) {
-      h += '      <span class="num">' + s.no + '</span>\n' +
-'      <a class="h2" href="works/' + s.slug + '/">' + esc(s.title) + '</a>\n';
+      const p = s.photos[0];
+      if (!p) continue;
+      const style = p.focus ? ' style="object-position:' + p.focus + '"' : '';
+      h += '      <a class="figure-link hero hero--small" href="works/' + s.slug + '/">\n' +
+'        <img class="figure" src="images/' + p.file + '" alt="' + esc(p.alt) + '"' + dims(p) + style +
+' loading="lazy" decoding="async">\n' +
+'        <div class="hero__overlay">\n' +
+'          <span class="num hero__num">' + s.no + '</span>\n' +
+'          <h2 class="title hero__title hero__title--small">' + esc(s.title) + '</h2>\n' +
+'          <p class="label hero__label">' + esc(s.meta) + '</p>\n' +
+'        </div>\n      </a>\n';
     }
     h += '    </div>\n';
     if (list.length > (second ? 6 : 5)) h += '    <a class="viewlink" href="works/">All series</a>\n';
