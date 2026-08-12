@@ -66,16 +66,18 @@ about/index.html          … 生成物（このサイトについて）
 sips -Z 2000 -s format jpeg -s formatOptions 90 元ファイル.JPG --out images/名前.jpg
 ```
 
-## Cloudflare Pages への公開
+## 公開
 
-1. リポジトリに push
-2. Workers & Pages → Create → Pages → Connect to Git
-3. ビルド設定
-   - Framework preset: **None**
-   - Build command: 空欄（生成物をコミットする運用のため）
-   - Build output directory: **/**
-4. Deploy → `xxx.pages.dev`
-5. Custom domains でドメイン接続
+Cloudflare の Workers & Pages で Git 連携。ビルド設定は Framework preset **None** /
+Build command **空欄**（生成物をコミットする運用のため）/ 出力ディレクトリ **/**。
+
+push すると自動でデプロイされる。公開URLは
+<https://tail-s-photogarary.shippo-photo.workers.dev>
+
+`_headers` はそのまま効いている（画像は1年 immutable、`X-Content-Type-Options: nosniff`）。
+
+独自ドメインを繋いだときは、`series.json` の `origin` を新URLに書き換えて
+`node build.mjs` → commit → push（canonical と og:image に使われるため）。
 
 ## 公開前にやること
 

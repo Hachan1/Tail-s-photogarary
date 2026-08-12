@@ -2,7 +2,7 @@
   "site": {
     "name": "しっぽ写真館",
     "description": "写真と短い文章。個人撮影、出張撮影、冊子制作。",
-    "origin": "https://tail-s-photogarary.pages.dev"
+    "origin": "https://tail-s-photogarary.shippo-photo.workers.dev"
   },
   "about": {
     "title": "このサイトについて",
