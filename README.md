@@ -18,8 +18,8 @@ about/index.html          … 生成物（このサイトについて）
 
 ## 撮影会を追加する
 
-1. 写真を `images/` に入れる（書き出し設定は下記「画像の書き出し」）
-2. `series.json` の `series` 配列の **先頭** に1件足す（新しい順に並べる）
+1. マスターを `uploads/` に入れ、`./export.sh uploads/<新しい写真>` で `images/` に書き出す
+2. 出力された雛形をもとに、`series.json` の `series` 配列の **先頭** に1件足す（新しい順に並べる）
 
 ```json
 {
@@ -58,12 +58,30 @@ about/index.html          … 生成物（このサイトについて）
 
 ## 画像の書き出し
 
-- 長辺 **2000px** / JPEG **品質90** / sRGB
-- 元データは `uploads/` に残す（gitignore 済み。リポジトリには入らない）
-- ライトボックスの表示上限は約1100px幅なので、2000pxあれば Retina でも足りる
+### 元データの作り方
+
+1. Capture One で現像 → **フル解像度**で書き出し
+2. Evoto AI でレタッチ → **フル解像度**で書き出し（Evoto 側で長辺指定はしない）
+3. 書き出したファイルを `uploads/` に入れる ＝ これがマスター
+
+`uploads/` は gitignore 済みでリポジトリには入らない。ここに高解像度を残しておくと、
+あとから冊子や印刷に使える。**Evoto のレタッチ結果は再現できないので、
+Web 用サイズだけ残す運用にはしないこと。**
+
+### Web 用に書き出す
 
 ```bash
-sips -Z 2000 -s format jpeg -s formatOptions 90 元ファイル.JPG --out images/名前.jpg
+./export.sh uploads/shiori20260913-*.JPG
+```
+
+- 長辺 **2560px** に収める（元がそれ以下なら拡大しない）／ JPEG **品質90**
+- `images/` に同じファイル名で書き出す
+- 実行後に `series.json` の `photos` の雛形が出るので、`alt` を埋めて貼り付ける
+
+設定を変えたいときは環境変数で上書きできる。
+
+```bash
+MAX=2000 QUALITY=85 ./export.sh uploads/foo.JPG
 ```
 
 ## 公開
