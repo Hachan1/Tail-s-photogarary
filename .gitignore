@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# ローカル設定
+.claude/settings.local.json
+
+# 書き出し前の元データ（リポジトリには入れない）
+uploads/
