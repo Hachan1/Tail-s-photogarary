@@ -55,6 +55,15 @@ function dims(p) {
   return (p.w && p.h) ? ' width="' + p.w + '" height="' + p.h + '"' : '';
 }
 
+// 一覧（格子・小カード）は images/thumb/ の縮小版を読む。
+// フルブリードの大きな写真とライトボックスだけが images/ の原寸を読む。
+function thumb(up, p) {
+  return up + 'images/thumb/' + p.file;
+}
+function full(up, p) {
+  return up + 'images/' + p.file;
+}
+
 function thumbStyle(p) {
   return p.focus ? ' style="object-position:' + p.focus + '"' : '';
 }
@@ -115,7 +124,7 @@ function renderTop(data) {
       if (!p) continue;
       const style = p.focus ? ' style="object-position:' + p.focus + '"' : '';
       h += '      <a class="figure-link hero hero--small" href="works/' + s.slug + '/">\n' +
-'        <img class="figure" src="images/' + p.file + '" alt="' + esc(p.alt) + '"' + dims(p) + style +
+'        <img class="figure" src="' + thumb('', p) + '" alt="' + esc(p.alt) + '"' + dims(p) + style +
 ' loading="lazy" decoding="async">\n' +
 '        <div class="hero__overlay">\n' +
 '          <span class="num hero__num">' + s.no + '</span>\n' +
@@ -146,7 +155,7 @@ function renderWorksIndex(data) {
     const p = s.photos[0];
     if (!p) continue;
     h += '    <a class="gallery__item gallery__item--card" href="' + s.slug + '/">\n' +
-'      <img src="../images/' + p.file + '" alt="' + esc(p.alt) + '"' + dims(p) + ' loading="lazy" decoding="async">\n' +
+'      <img src="' + thumb('../', p) + '" alt="' + esc(p.alt) + '"' + dims(p) + ' loading="lazy" decoding="async">\n' +
 '      <div class="hero__overlay">\n' +
 '        <span class="num hero__num">' + s.no + '</span>\n' +
 '        <h2 class="title hero__title hero__title--small">' + esc(s.title) + '</h2>\n' +
@@ -206,9 +215,9 @@ function renderSeries(data, s) {
 (s.note ? '      <p class="body">' + esc(s.note) + '</p>\n' : '') +
 '    </div>\n  </section>\n\n  <div class="wrap gallery">\n';
   s.photos.forEach((p, i) => {
-    h += '    <a class="gallery__item" href="../../images/' + p.file + '"' +
-' data-lightbox="../../images/' + p.file + '" data-alt="' + esc(p.alt) + '">\n' +
-'      <img src="../../images/' + p.file + '" alt="' + esc(p.alt) + '"' + dims(p) + ' loading="' + (i === 0 ? 'eager' : 'lazy') + '" decoding="async">\n' +
+    h += '    <a class="gallery__item" href="' + full('../../', p) + '"' +
+' data-lightbox="' + full('../../', p) + '" data-alt="' + esc(p.alt) + '">\n' +
+'      <img src="' + thumb('../../', p) + '" alt="' + esc(p.alt) + '"' + dims(p) + ' loading="' + (i === 0 ? 'eager' : 'lazy') + '" decoding="async">\n' +
 '    </a>\n';
   });
   h += '  </div>\n\n  <div class="wrap back">\n    <a class="viewlink" href="../">All events</a>\n  </div>\n</main>\n';

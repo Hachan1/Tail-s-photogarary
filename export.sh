@@ -3,31 +3,35 @@
 #
 #   ./export.sh uploads/shiori20260913-*.JPG
 #
-# ・長辺 MAX px に収める（元がそれ以下なら拡大しない）
-# ・品質 QUALITY で書き出す
+# ・拡大表示用：長辺 MAX px / 品質 QUALITY を images/ に
+# ・一覧表示用：長辺 THUMB px / 品質 THUMB_QUALITY を images/thumb/ に
+#   （格子や小カードは原寸だと8倍以上過剰。一覧はサムネ、拡大時だけ原寸を読む）
 # ・最後に series.json に貼る photos の雛形を出す（alt だけ埋めれば済む）
 
 set -euo pipefail
 
 MAX=${MAX:-2560}
 QUALITY=${QUALITY:-90}
+THUMB=${THUMB:-960}
+THUMB_QUALITY=${THUMB_QUALITY:-80}
 OUT=${OUT:-images}
 
 if [ $# -eq 0 ]; then
   echo "使い方: ./export.sh <元ファイル...>" >&2
   echo "  例:   ./export.sh uploads/shiori20260913-*.JPG" >&2
-  echo "  設定: MAX=$MAX  QUALITY=$QUALITY  出力先=$OUT" >&2
+  echo "  設定: MAX=$MAX QUALITY=$QUALITY THUMB=$THUMB THUMB_QUALITY=$THUMB_QUALITY 出力先=$OUT" >&2
   exit 1
 fi
 
-mkdir -p "$OUT"
+mkdir -p "$OUT" "$OUT/thumb"
 
 json=""
 total_in=0
 total_out=0
+total_thumb=0
 count=0
 
-printf "%-32s %-13s %-13s %s\n" "ファイル" "元" "書き出し" "サイズ"
+printf "%-32s %-13s %-13s %s\n" "ファイル" "元" "書き出し" "サイズ（拡大用 + 一覧用）"
 printf -- "----------------------------------------------------------------------------\n"
 
 for src in "$@"; do
@@ -60,15 +64,25 @@ for src in "$@"; do
   read -r nw nh < <(sips -g pixelWidth -g pixelHeight "$dst" 2>/dev/null \
     | awk '/pixelWidth/{w=$2} /pixelHeight/{h=$2} END{print w, h}')
 
+  # 一覧用サムネイル（拡大表示は原寸を読むので画質は落ちない）
+  if [ "$long" -gt "$THUMB" ]; then
+    sips -Z "$THUMB" -s format jpeg -s formatOptions "$THUMB_QUALITY" "$src" --out "$OUT/thumb/$base" >/dev/null
+  else
+    sips -s format jpeg -s formatOptions "$THUMB_QUALITY" "$src" --out "$OUT/thumb/$base" >/dev/null
+  fi
+
   in_b=$(stat -f%z "$src")
   out_b=$(stat -f%z "$dst")
+  th_b=$(stat -f%z "$OUT/thumb/$base")
   total_in=$((total_in + in_b))
   total_out=$((total_out + out_b))
+  total_thumb=$((total_thumb + th_b))
   count=$((count + 1))
 
-  printf "%-32s %-13s %-13s %s → %s\n" "$base" "${w}x${h}" "${nw}x${nh}" \
+  printf "%-32s %-13s %-13s %s → %s + %s\n" "$base" "${w}x${h}" "${nw}x${nh}" \
     "$(echo "$in_b" | awk '{printf "%.2fMB", $1/1000000}')" \
-    "$(echo "$out_b" | awk '{printf "%.2fMB", $1/1000000}')"
+    "$(echo "$out_b" | awk '{printf "%.2fMB", $1/1000000}')" \
+    "$(echo "$th_b" | awk '{printf "%.0fKB", $1/1000}')"
 
   json="$json        {
           \"file\": \"$base\",
@@ -80,9 +94,10 @@ for src in "$@"; do
 done
 
 printf -- "----------------------------------------------------------------------------\n"
-printf "%d枚を %s/ に書き出しました  %s → %s\n" "$count" "$OUT" \
+printf "%d枚を書き出しました  元 %s → 拡大用 %s（%s/）+ 一覧用 %s（%s/thumb/）\n" "$count" \
   "$(echo "$total_in" | awk '{printf "%.1fMB", $1/1000000}')" \
-  "$(echo "$total_out" | awk '{printf "%.1fMB", $1/1000000}')"
+  "$(echo "$total_out" | awk '{printf "%.1fMB", $1/1000000}')" "$OUT" \
+  "$(echo "$total_thumb" | awk '{printf "%.1fMB", $1/1000000}')" "$OUT"
 
 cat <<EOS
 
