@@ -1,7 +1,5 @@
+# /images/* は images/thumb/ 以下にも一致する（階層をまたいで一致するため）
 /images/*
-  Cache-Control: public, max-age=31536000, immutable
-
-/images/thumb/*
   Cache-Control: public, max-age=31536000, immutable
 
 /style.css

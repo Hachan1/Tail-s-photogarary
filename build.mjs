@@ -213,7 +213,10 @@ function renderSeries(data, s) {
 '    <div class="entry__body">\n      <h1 class="title">' + esc(s.title) + '</h1>\n' +
 '      <p class="label">' + esc(s.meta) + '</p>\n' +
 (s.note ? '      <p class="body">' + esc(s.note) + '</p>\n' : '') +
-'    </div>\n  </section>\n\n  <div class="wrap gallery">\n';
+'    </div>\n  </section>\n\n' +
+'  <div class="wrap gallery-hint">\n' +
+'    <p class="label">タップ・クリックで大きく表示されます</p>\n' +
+'  </div>\n\n  <div class="wrap gallery">\n';
   s.photos.forEach((p, i) => {
     h += '    <a class="gallery__item" href="' + full('../../', p) + '"' +
 ' data-lightbox="' + full('../../', p) + '" data-alt="' + esc(p.alt) + '">\n' +

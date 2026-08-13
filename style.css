@@ -97,6 +97,7 @@ a.figure-link{display:block}
 a.figure-link .figure{transition:opacity .3s}
 a.figure-link:hover .figure{opacity:.82}
 
+.gallery-hint p{margin:0}
 .gallery{padding-top:var(--s3);padding-bottom:var(--s5);
   columns:260px;column-gap:var(--s2)}
 .gallery__item{display:block;position:relative;cursor:pointer;background:var(--accent);
