@@ -1,0 +1,20 @@
+# Cloudflare Workers の配信対象から外すもの。
+# 出力ディレクトリがリポジトリ直下（.）なので、Webに出す必要のないものをここで除外する。
+#
+# ※ .git を外さないと、リポジトリが育ったとき pack ファイルが
+#   1ファイル25MiBの上限に当たってデプロイが失敗する。
+
+.git
+.gitignore
+.assetsignore
+.claude
+
+# ビルド用のソースとツール（生成物だけ配信すればよい）
+build.mjs
+export.sh
+README.md
+
+# wrangler が生成するもの
+node_modules
+wrangler.jsonc
+.wrangler
