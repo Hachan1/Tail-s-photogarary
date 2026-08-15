@@ -1,0 +1,23 @@
+{
+  // Cloudflare Workers の設定。
+  // これを置かないと wrangler がビルドのたびに自動生成し、preview_urls の
+  // 指定が入らないため、明示的にリポジトリで管理する。
+  //
+  // name は既存の Worker 名と完全に一致させること。変えると別の Worker が
+  // 作られ、公開URLが変わってしまう。
+  "name": "tail-s-photogarary",
+  "compatibility_date": "2026-08-15",
+
+  // プレビューURLを無効化する。有効だと、本番URL以外の想定外のURLでも
+  // サイトが見える状態になる。
+  "preview_urls": false,
+
+  "observability": {
+    "enabled": true
+  },
+
+  // 配信対象はリポジトリ直下。除外は .assetsignore で指定している。
+  "assets": {
+    "directory": "."
+  }
+}
