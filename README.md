@@ -46,6 +46,26 @@ about/index.html          … 生成物（このサイトについて）
 - トップに出るのは最新2件。3件目以降は「More events」に4件、6件を超えると「All events」リンクが出る
 - 50件でも生成物は静的HTMLなので表示速度は変わらない
 
+## 撮影会を非公開にする（卒業・掲載終了など）
+
+`series.json` の該当シリーズに `"hidden": true` を足して `node build.mjs` → commit → push。
+
+```json
+{ "slug": "meno-last", "hidden": true, "title": "…", … }
+```
+
+これだけで次の3つが自動で効く。
+
+- ページを作らない（既にあれば消す）。トップ・一覧・番号（01, 02 …）からも消えて詰まる
+- そのシリーズの画像（原寸＋サムネ）を `.assetsignore` の自動管理ブロックに書き出し、配信対象から外す
+  ※ページが無くても、画像のURLを直接開けば見えてしまうため。`.assetsignore` の自動管理ブロックは手で編集しない
+- `series.json` のデータと `images/`・`uploads/` の実ファイルは残る
+
+**元に戻す**には `"hidden": true` の行を消して、同じく `node build.mjs` → commit → push。
+
+注意：すでに閲覧したブラウザには、画像が最大1年間キャッシュされている（`_headers` の `immutable`）。
+また検索エンジンなど外部に残ったコピーはこちらからは消せない。
+
 ## About ページを直す
 
 `series.json` の `about` を編集して `node build.mjs`。

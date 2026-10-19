@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // site/build.mjs — series.json から HTML を生成する。実行: node build.mjs
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rm } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -234,10 +234,41 @@ async function put(rel, html) {
   console.log('wrote', rel);
 }
 
-const data = JSON.parse(await readFile(join(root, 'series.json'), 'utf8'));
+// "hidden": true のシリーズは非公開にする。
+//  ・ページを生成しない（既に生成済みのページがあれば消す）
+//  ・トップ／一覧／番号／og:image にも出さない
+//  ・画像は .assetsignore の自動管理ブロックに書き出し、配信対象から外す
+//    （これをしないとページが無くても画像のURLを直接叩けば見えてしまう）
+// series.json のデータと images/ の実ファイルは残るので、hidden を外して再ビルドすれば再公開できる。
+const all = JSON.parse(await readFile(join(root, 'series.json'), 'utf8'));
+const hidden = all.series.filter((s) => s.hidden);
+const data = Object.assign({}, all, { series: all.series.filter((s) => !s.hidden) });
+
 await put('index.html', renderTop(data));
 await put('works/index.html', renderWorksIndex(data));
 if (data.about) await put('about/index.html', renderAbout(data));
 for (const s of numbered(data.series)) {
   await put(join('works', s.slug, 'index.html'), renderSeries(data, s));
 }
+
+for (const s of hidden) {
+  await rm(join(root, 'works', s.slug), { recursive: true, force: true });
+  console.log('hidden ', s.slug, '(' + s.photos.length + '枚)');
+}
+
+// 非表示シリーズの画像を .assetsignore に反映する。
+// 公開中のシリーズが同じ画像を使っている場合は除外しない。
+const BEGIN = '# >>> build.mjs 自動管理：非表示シリーズの画像（手で編集しない）';
+const END = '# <<< 自動管理ここまで';
+const visibleFiles = new Set(data.series.flatMap((s) => s.photos.map((p) => p.file)));
+const ignored = [...new Set(hidden.flatMap((s) => s.photos.map((p) => p.file)))]
+  .filter((f) => !visibleFiles.has(f))
+  .sort()
+  .flatMap((f) => ['/images/' + f, '/images/thumb/' + f]);
+const ignPath = join(root, '.assetsignore');
+let ign = await readFile(ignPath, 'utf8');
+const block = ignored.length ? BEGIN + '\n' + ignored.join('\n') + '\n' + END + '\n' : '';
+const re = new RegExp(BEGIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '[\\s\\S]*?' + END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\n?');
+ign = re.test(ign) ? ign.replace(re, block) : (block ? ign.replace(/\n*$/, '\n\n') + block : ign);
+await writeFile(ignPath, ign, 'utf8');
+console.log('.assetsignore: 非表示の画像', ignored.length, 'ファイルを配信対象から除外');
