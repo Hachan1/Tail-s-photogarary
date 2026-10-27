@@ -18,7 +18,7 @@ about/index.html          … 生成物（このサイトについて）
 
 ## 撮影会を追加する
 
-1. マスターを `uploads/` に入れ、`./export.sh uploads/<新しい写真>` で `images/` に書き出す
+1. マスターを `uploads/` に入れ、`node tools/export.mjs uploads/<新しい写真>` で `images/` に書き出す
 2. 出力された雛形をもとに、`series.json` の `series` 配列の **先頭** に1件足す（新しい順に並べる）
 
 ```json
@@ -91,8 +91,11 @@ Web 用サイズだけ残す運用にはしないこと。**
 ### Web 用に書き出す
 
 ```bash
-./export.sh uploads/shiori20260913-*.JPG
+node tools/export.mjs uploads/Shiori20260913-*.JPG
 ```
+
+Mac でも Windows でも同じコマンドで動く（初回だけ `cd tools && npm install`。`node_modules` は gitignore 済み）。
+旧版の `./export.sh`（Mac 専用・sips 使用）も残してあるが、今後は `tools/export.mjs` を使う。
 
 1枚につき2つ書き出される。**同じファイル名のまま**なので、`series.json` に書くのは1回だけ。
 
@@ -109,7 +112,7 @@ Web 用サイズだけ残す運用にはしないこと。**
 設定は環境変数で上書きできる。
 
 ```bash
-MAX=2000 QUALITY=85 THUMB=800 THUMB_QUALITY=75 ./export.sh uploads/foo.JPG
+MAX=2000 QUALITY=85 THUMB=800 THUMB_QUALITY=75 node tools/export.mjs uploads/foo.JPG
 ```
 
 ## 公開

@@ -12,6 +12,7 @@
 # ビルド用のソースとツール（生成物だけ配信すればよい）
 build.mjs
 export.sh
+tools
 README.md
 
 # wrangler が生成するもの

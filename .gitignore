@@ -6,3 +6,6 @@
 
 # 書き出し前の元データ（リポジトリには入れない）
 uploads/
+
+# 書き出しツールの依存（npm install で入る）
+node_modules/
